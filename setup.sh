@@ -11,14 +11,12 @@ function isinstalled {
 
 PACKAGE=kmod-nvidia
 
-# uninstall old kmod-nvidia
-if isinstalled $PACKAGE; then 
-	yum remove kmod-nvidia -y 
-fi
 
 
 # install specified kmod-nvidia
-array=( $(repoquery kmod-nvidia --show-duplicates) )
+array=( $(repoquery kmod-nvidia --show-duplicates --disablerepo="*" --enablerepo="elrepo-archives") )
+# array=( $(repoquery kmod-nvidia --show-duplicates --disablerepo="*" --enablerepo="elrepo-archives") )
+
 
 PS3="Please enter your choice: "
 select answer in "${array[@]}"; do
@@ -28,8 +26,13 @@ select answer in "${array[@]}"; do
 	fi
 done
 
-yum install -y $answer
+# uninstall old kmod-nvidia
+if isinstalled $PACKAGE; then 
+  yum remove kmod-nvidia -y 
+fi
 
+# yum install -y --enablerepo="elrepo-archives" $answer
+yum install $answer --disablerepo="*" --enablerepo="elrepo-archives"
 
 
 # reinstall bumblebee or you won't be able to login to x
